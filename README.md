@@ -7,9 +7,7 @@ Release Pipeline that
 
 ## Instructions
 1. Create a git configuration and set it in build.groovy
-1. Import the DSL
-```
-./install.sh```
+1. Import the DSL, ```./install.sh```
 1. Run release
 
 ## Optional
@@ -19,6 +17,6 @@ Release Pipeline that
   Options +Indexes
 </Directory>
 ```
-and restart Apache:
+and restart Apache, 
 ```sudo /etc/init.d/commanderApache restart```
 
