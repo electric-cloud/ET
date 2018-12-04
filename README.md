@@ -12,7 +12,7 @@ Release Pipeline that
 1. Run release
 
 ## Optional
-1. To enable directory listing to Apache file server, add the following lines to ```/opt/electriccloud/electriccommander/apache/conf/httpd.conf```:
+1. To enable directory listing to Apache file server, add the following lines to */opt/electriccloud/electriccommander/apache/conf/httpd.conf*:
 ```<Directory /opt/electriccloud/electriccommander/apache/htdocs/RPMs>
   Options +Indexes
 </Directory>```
