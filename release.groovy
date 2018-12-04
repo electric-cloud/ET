@@ -1,9 +1,12 @@
 project "ET",{
 	release "app1 2018.12.20",{
+		plannedEndDate = "2018-12-20"
 		property "Application", value: "app1"
 		pipeline "Build Package Deploy",{
 			stage "Build and Package",{
-				task "Build comp1",
+			plannedStartDate 	= "2018-12-04"
+			plannedEndDate 		= "2018-12-08"
+			task "Build comp1",
 					taskType: 'PROCEDURE',
 					subproject: projectName,
 					subprocedure: 'Build',
@@ -41,6 +44,8 @@ project "ET",{
 				}
 			} // stage
 			stage "Integration",{
+				plannedStartDate 	= "2018-12-08"
+				plannedEndDate 		= "2018-12-18"
 				task "Deploy",{
 					description = ''
 					actualParameter = [
@@ -59,6 +64,8 @@ project "ET",{
 				} // task
 			} // stage
 			stage "Staging",{
+				plannedStartDate 	= "2018-12-18"
+				plannedEndDate 		= "2018-12-20"
 				task "Deploy",{
 					description = ''
 					actualParameter = [
@@ -77,6 +84,8 @@ project "ET",{
 				} // task
 			} // stage
 			stage "PRD",{
+				plannedStartDate 	= "2018-12-20"
+				plannedEndDate 		= "2018-12-21"
 				task "Deploy",{
 					description = ''
 					actualParameter = [

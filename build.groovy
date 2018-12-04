@@ -1,15 +1,15 @@
 /*
 
 
-Gets user stories from SCM commit summary; assumes in XXX-123 format.
+Gets user stories from SCM commit summary; assumes in XX-123 format.
 
 Instructions
-- Create Git configuration gmaxey
+- Create a Git configuration and set it below
 
 
 */
 
-
+def GitConfiguration="gmaxey"
 
 project "ET", resourceName: "local", {
 	// Create build counters and initialize to 1000
@@ -33,7 +33,7 @@ project "ET", resourceName: "local", {
 			actualParameter : [
 				clone: '1',
 				commit: '',
-				config: 'gmaxey',  // required
+				config: GitConfiguration,
 				depth: '',
 				dest: '$[Component]',
 				GitBranch: 'master',
