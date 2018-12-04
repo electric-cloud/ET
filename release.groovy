@@ -1,5 +1,6 @@
 project "ET",{
 	release "app1 2018.12.20",{
+		property "Application", value: "app1"
 		pipeline "Build Package Deploy",{
 			stage "Build and Package",{
 				task "Build comp1",
@@ -23,21 +24,75 @@ project "ET",{
 					subproject: projectName,
 					subprocedure: 'Package',
 					actualParameter: [
-						'Application': 'app1',
+						'Application': '$[/myRelease/Application]',
 						'ArtifactList': '''\
 							$[/myPipelineStageRuntime/tasks/"Build comp1"/job/outputParameters/Artifact]
 							$[/myPipelineStageRuntime/tasks/"Build comp2"/job/outputParameters/Artifact]
 						'''.stripIndent(),
 					],
 					stageSummaryParameters: '[{"name":"RPM","label":"RPM"}]'
-				task "Scan"
+				task "Scan",{
+					actualParameter = [
+					  'commandToRun': 'echo scanning',
+					]
+					subpluginKey = 'EC-Core'
+					subprocedure = 'RunCommand'
+					taskType = 'COMMAND'
+				}
 			} // stage
 			stage "Integration",{
-				task "Deploy"
+				task "Deploy",{
+					description = ''
+					actualParameter = [
+						'Application': '$[/myRelease/Application]',
+						'ec_stageArtifacts': '0',
+						'Version': '$[/myProject/$[/myRelease/Application]/version]-$[/myProject/$[/myRelease/Application]/rpmIndex]',
+					]
+					advancedMode = '0'
+					environmentName = stageName
+					environmentProjectName = projectName
+					subapplication = 'App'
+					subprocess = 'Deploy'
+					subproject = projectName
+					taskProcessType = 'APPLICATION'
+					taskType = 'PROCESS'
+				} // task
 			} // stage
 			stage "Staging",{
+				task "Deploy",{
+					description = ''
+					actualParameter = [
+						'Application': '$[/myRelease/Application]',
+						'ec_stageArtifacts': '0',
+						'Version': '$[/myProject/$[/myRelease/Application]/version]-$[/myProject/$[/myRelease/Application]/rpmIndex]',
+					]
+					advancedMode = '0'
+					environmentName = stageName
+					environmentProjectName = projectName
+					subapplication = 'App'
+					subprocess = 'Deploy'
+					subproject = projectName
+					taskProcessType = 'APPLICATION'
+					taskType = 'PROCESS'
+				} // task
 			} // stage
 			stage "PRD",{
+				task "Deploy",{
+					description = ''
+					actualParameter = [
+						'Application': '$[/myRelease/Application]',
+						'ec_stageArtifacts': '0',
+						'Version': '$[/myProject/$[/myRelease/Application]/version]-$[/myProject/$[/myRelease/Application]/rpmIndex]',
+					]
+					advancedMode = '0'
+					environmentName = stageName
+					environmentProjectName = projectName
+					subapplication = 'App'
+					subprocess = 'Deploy'
+					subproject = projectName
+					taskProcessType = 'APPLICATION'
+					taskType = 'PROCESS'
+				} // task
 			} // stage
 		} // pipeline
 	} // release
