@@ -7,15 +7,18 @@ Release Pipeline that
 
 ## Instructions
 1. Create a git configuration and set it in build.groovy
-1. Import the DSL ```
+1. Import the DSL
+```
 ./install.sh```
 1. Run release
 
 ## Optional
 1. To enable directory listing to Apache file server, add the following lines to */opt/electriccloud/electriccommander/apache/conf/httpd.conf*:
-```<Directory /opt/electriccloud/electriccommander/apache/htdocs/RPMs>
+```
+<Directory /opt/electriccloud/electriccommander/apache/htdocs/RPMs>
   Options +Indexes
-</Directory>```
+</Directory>
+```
 and restart Apache:
 ```sudo /etc/init.d/commanderApache restart```
 
