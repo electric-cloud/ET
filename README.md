@@ -6,7 +6,8 @@ Release Pipeline that
 1. Deploy RPM to Integration, Staging, and PRD enviroments
 
 ## Instructions
-1. Create a git configuration and set it in build.groovy
+1. Install unzip on flow server ```sudo apt-get -y install unzip```
+1. Create a git configuration and set it in build.groovy and package.groovy
 1. Import the DSL
 ```
 ./install.sh```
@@ -21,4 +22,7 @@ Release Pipeline that
 ```
 and restart Apache:
 ```sudo /etc/init.d/commanderApache restart```
+
+## TODO
+- Flow server URL lookup for RPM
 

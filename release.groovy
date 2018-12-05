@@ -4,9 +4,16 @@ project "ET",{
 		property "Application", value: "app1"
 		pipeline "Build Package Deploy",{
 			stage "Build and Package",{
-			plannedStartDate 	= "2018-12-04"
-			plannedEndDate 		= "2018-12-08"
-			task "Build comp1",
+				plannedStartDate 	= "2018-12-04"
+				plannedEndDate 		= "2018-12-08"
+
+				task 'Build', {
+					groupRunType = 'parallel'
+					taskType = 'GROUP'
+				}
+
+				task "Build comp1",
+					groupName: 'Build',
 					taskType: 'PROCEDURE',
 					subproject: projectName,
 					subprocedure: 'Build',
@@ -15,6 +22,7 @@ project "ET",{
 					],
 					stageSummaryParameters: '[{"name":"UserStories","label":"comp1 UserStories"}]'
 				task "Build comp2",
+					groupName: 'Build',
 					taskType: 'PROCEDURE',
 					subproject: projectName,
 					subprocedure: 'Build',
@@ -41,11 +49,22 @@ project "ET",{
 					subpluginKey = 'EC-Core'
 					subprocedure = 'RunCommand'
 					taskType = 'COMMAND'
-				}
+				} // task
 			} // stage
 			stage "Integration",{
 				plannedStartDate 	= "2018-12-08"
 				plannedEndDate 		= "2018-12-18"
+
+				gate 'PRE', {
+					task 'Promote', {
+						notificationTemplate = 'ec_default_gate_task_notification_template'
+						taskType = 'APPROVAL'
+						approver = [
+							'admin',
+						]
+					} // task
+				} // gate
+
 				task "Deploy",{
 					description = ''
 					actualParameter = [
@@ -66,6 +85,18 @@ project "ET",{
 			stage "Staging",{
 				plannedStartDate 	= "2018-12-18"
 				plannedEndDate 		= "2018-12-20"
+
+				gate 'PRE', {
+					task 'Promote', {
+						notificationTemplate = 'ec_default_gate_task_notification_template'
+						taskType = 'APPROVAL'
+						approver = [
+							'admin',
+						]
+					} // task
+				} // gate
+
+
 				task "Deploy",{
 					description = ''
 					actualParameter = [
@@ -86,6 +117,17 @@ project "ET",{
 			stage "PRD",{
 				plannedStartDate 	= "2018-12-20"
 				plannedEndDate 		= "2018-12-21"
+
+				gate 'PRE', {
+					task 'Promote', {
+						notificationTemplate = 'ec_default_gate_task_notification_template'
+						taskType = 'APPROVAL'
+						approver = [
+							'admin',
+						]
+					} // task
+				} // gate
+
 				task "Deploy",{
 					description = ''
 					actualParameter = [

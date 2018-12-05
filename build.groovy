@@ -41,7 +41,7 @@ project "ET", resourceName: "local", {
 				tag: ''
 			]
 		step "Get User Stories", command: 'ectool setOutputParameter UserStories $[/javascript var summary = myJob.ecscm_changeLogs["Git-$[Component].git-master"].match(/^Summary: .*$/gm); summary[0].match(/\\w+-\\d+/g)]'
-		
+
 		step "Build", resourceName: '$[/myJob/Resource]',
 			subproject : '/plugins/EC-FileOps/project',
 			subprocedure : 'Create Zip File',

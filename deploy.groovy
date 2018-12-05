@@ -69,6 +69,8 @@ project ProjectName, {
 				
 				
 					process 'Install', {
+						processType = 'DEPLOY'
+
 						processStep 'Retrieve RPM', {
 							applicationTierName = null
 							actualParameter = [
@@ -101,7 +103,54 @@ project ProjectName, {
 						} // processStep
 
 						processDependency 'Retrieve RPM', targetProcessStepName: 'Deploy'
+						
+						processStep 'Install RPM', {
+							errorHandling = 'failProcedure'
+							applicationTierName = null
+							actualParameter = [
+								'commandToRun': '''\
+									cd ~/"$[/myEnvironment]"
+									# Simulated rpm install
+									unzip -o $[Application]-$[Version].rpm
+									sh installer.sh
+									# Clean up
+									rm *.rpm *.zip
+									ls
+								'''.stripIndent(),
+							]
+							subprocedure = 'RunCommand'
+							subproject = '/plugins/EC-Core/project'
+						} // processStep
+
+						processDependency 'Deploy', targetProcessStepName: 'Install RPM', branchType: 'SUCCESS'
 					
+						processStep 'Update Metadata File', {
+							applicationTierName = null
+							actualParameter = [
+								'commandToRun': '''\
+									# Create location for metadata report link
+									mkdir -p artifacts
+									previous_pwd=$PWD
+									cd ~/"$[/myEnvironment]"
+									# Make sure metadata file exists
+									touch metadata
+									# Remove entry for current host
+									sed -i '/$[/myResource]/d' metadata
+									# Add inventory for current host
+									echo "$[/myEnvironment]:$[/myResource]:$[Application]-$[Version].rpm">> metadata
+									# Copy metadata file to workspace
+									cp metadata "$previous_pwd"/artifacts
+									# Add job link to the metadata
+									ectool setProperty "/myJobStep/report-urls/metadata"  "/commander/jobSteps/$[/myJobStep/jobStepId]/metadata"
+									ectool setProperty "/myPipelineStageRuntime/ec_summary/metadata" --value "<html><a href=\"/commander/jobSteps/$[/myJobStep/jobStepId]/metadata\" target=\"_blank\">metadata</a></html>"
+								'''.stripIndent(),
+							]
+							subprocedure = 'RunCommand'
+							subproject = '/plugins/EC-Core/project'
+						} // processStep
+
+						processDependency 'Install RPM', targetProcessStepName: 'Update Metadata File'
+						
 					} // process
 				} // component
 			} // Tiers		
@@ -110,13 +159,29 @@ project ProjectName, {
 		process "Deploy",{
 			formalParameter 'Application'
 			formalParameter 'Version'
+			
 			processStep 'Deploy app', {
+				errorHandling = 'failProcedure'
 				processStepType = 'process'
 				subcomponent = 'RPM'
 				subcomponentApplicationName = applicationName
 				subcomponentProcess = 'Install'
 				applicationTierName = 'app'
 			} // processStep
+			
+			processStep 'Rollback', {
+				processStepType = 'rollback'
+				rollbackType = 'environment'
+				smartRollback = '1'
+			}			
+			
+			processDependency 'Deploy app', targetProcessStepName: 'Rollback', {
+				branchCondition = '$[/javascript myJob.outcome != "success"]'
+				branchConditionName = 'onError'
+				branchConditionType = 'CUSTOM'
+				branchType = 'ALWAYS'
+			}
+			
 		} // process
 
 		// Create Application-Environment mappings
