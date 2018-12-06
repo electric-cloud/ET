@@ -69,8 +69,9 @@ project "ET",{
 					description = ''
 					actualParameter = [
 						'Application': '$[/myRelease/Application]',
-						'ec_stageArtifacts': '0',
-						'Version': '$[/myProject/$[/myRelease/Application]/version]-$[/myProject/$[/myRelease/Application]/rpmIndex]',
+						ec_smartDeployOption: '0',
+						ec_stageArtifacts: '0',
+						Version: '$[/myProject/$[/myRelease/Application]/version]-$[/myProject/$[/myRelease/Application]/rpmIndex]',
 					]
 					advancedMode = '0'
 					environmentName = stageName
@@ -101,8 +102,9 @@ project "ET",{
 					description = ''
 					actualParameter = [
 						'Application': '$[/myRelease/Application]',
-						'ec_stageArtifacts': '0',
-						'Version': '$[/myProject/$[/myRelease/Application]/version]-$[/myProject/$[/myRelease/Application]/rpmIndex]',
+						ec_smartDeployOption: '0',
+						ec_stageArtifacts: '0',
+						Version: '$[/myProject/$[/myRelease/Application]/version]-$[/myProject/$[/myRelease/Application]/rpmIndex]',
 					]
 					advancedMode = '0'
 					environmentName = stageName
@@ -112,6 +114,16 @@ project "ET",{
 					subproject = projectName
 					taskProcessType = 'APPLICATION'
 					taskType = 'PROCESS'
+					insertRollingDeployManualStep = '1'
+					rollingDeployEnabled = '1'
+					rollingDeployManualStepCondition = 'always'
+					rollingDeployManualStepAssignee = [
+						'admin',
+					]
+					rollingDeployPhase = [
+						'Blue',
+						'Green',
+					]
 				} // task
 			} // stage
 			stage "PRD",{
@@ -132,8 +144,9 @@ project "ET",{
 					description = ''
 					actualParameter = [
 						'Application': '$[/myRelease/Application]',
-						'ec_stageArtifacts': '0',
-						'Version': '$[/myProject/$[/myRelease/Application]/version]-$[/myProject/$[/myRelease/Application]/rpmIndex]',
+						ec_smartDeployOption: '0',
+						ec_stageArtifacts: '0',
+						Version: '$[/myProject/$[/myRelease/Application]/version]-$[/myProject/$[/myRelease/Application]/rpmIndex]',
 					]
 					advancedMode = '0'
 					environmentName = stageName
@@ -143,6 +156,16 @@ project "ET",{
 					subproject = projectName
 					taskProcessType = 'APPLICATION'
 					taskType = 'PROCESS'
+					insertRollingDeployManualStep = '1'
+					rollingDeployEnabled = '1'
+					rollingDeployManualStepCondition = 'always'
+					rollingDeployManualStepAssignee = [
+						'admin',
+					]
+					rollingDeployPhase = [
+						'Blue',
+						'Green',
+					]
 				} // task
 			} // stage
 		} // pipeline

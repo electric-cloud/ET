@@ -17,8 +17,10 @@ deleteApplication (projectName: ProjectName, applicationName: AppName)
 // Remove old Environment models
 Envs.each { Env ->
 	AppTiers.each() { Tier ->
-		def res = "${Env}_${Tier}"
-		deleteResource resourceName: res
+		(1..2).each { i ->
+			def res = "${Env}_${Tier}_${i}"
+			deleteResource resourceName: res
+		}
 	}
 	deleteEnvironment(projectName: ProjectName, environmentName: Env)
 }
@@ -31,10 +33,12 @@ project ProjectName, {
 	Envs.each { Env ->
 		environment environmentName: Env, {
 			EnvTiers.each() { Tier ->
-				def res = "${Env}_${Tier}"
-				environmentTier Tier, {
-					// create and add resource to the Tier
-					resource resourceName: res, hostName : "localhost"
+				(1..2).each { i ->
+					def res = "${Env}_${Tier}_${i}"
+					environmentTier Tier, {
+						// create and add resource to the Tier
+						resource resourceName: res, hostName : "localhost"
+					}
 				}
 			}
 		}
@@ -51,7 +55,7 @@ project ProjectName, {
 								expandable = '1'
 							}
 							artifactRelativePath = '$[artifact]-$[version].rpm'
-							directory = '/home/flow/$[/myEnvironment]'
+							directory = '/home/flow/$[/myResource]'
 							isFilePath = '1'
 							latestVersionFinder = ''
 							overwrite = '1'
@@ -59,7 +63,7 @@ project ProjectName, {
 							property 'pluginProjectName', value: 'EC-FileSysRepo', {
 								expandable = '1'
 							}
-							property 'source', value: '/tmp/$[/myEnvironment]', {
+							property 'source', value: '/tmp/$[/myResource]', {
 								expandable = '1'
 							}
 							property 'version', value: '$[Version]', {
@@ -75,8 +79,8 @@ project ProjectName, {
 							applicationTierName = null
 							actualParameter = [
 								'commandToRun': '''\
-									mkdir -p /tmp/$[/myEnvironment]
-									cd /tmp/$[/myEnvironment]
+									mkdir -p /tmp/$[/myResource]
+									cd /tmp/$[/myResource]
 									rm -f $[Application]-$[Version].rpm*
 									wget --no-check-certificate https://$[/server/settings/ipAddress]/RPMs/$[Application]-$[Version].rpm
 								'''.stripIndent(),
@@ -109,7 +113,7 @@ project ProjectName, {
 							applicationTierName = null
 							actualParameter = [
 								'commandToRun': '''\
-									cd ~/"$[/myEnvironment]"
+									cd ~/"$[/myResource]"
 									# Simulated rpm install
 									unzip -o $[Application]-$[Version].rpm
 									sh installer.sh
@@ -128,21 +132,17 @@ project ProjectName, {
 							applicationTierName = null
 							actualParameter = [
 								'commandToRun': '''\
-									# Create location for metadata report link
-									mkdir -p artifacts
-									previous_pwd=$PWD
-									cd ~/"$[/myEnvironment]"
+									# Create metadata in Apache location
+									cd /opt/electriccloud/electriccommander/apache/htdocs/RPMs
 									# Make sure metadata file exists
 									touch metadata
 									# Remove entry for current host
 									sed -i '/$[/myResource]/d' metadata
 									# Add inventory for current host
 									echo "$[/myEnvironment]:$[/myResource]:$[Application]-$[Version].rpm">> metadata
-									# Copy metadata file to workspace
-									cp metadata "$previous_pwd"/artifacts
-									# Add job link to the metadata
-									ectool setProperty "/myJobStep/report-urls/metadata"  "/commander/jobSteps/$[/myJobStep/jobStepId]/metadata"
-									ectool setProperty "/myPipelineStageRuntime/ec_summary/metadata" --value "<html><a href=\"/commander/jobSteps/$[/myJobStep/jobStepId]/metadata\" target=\"_blank\">metadata</a></html>"
+									ectool setProperty "/myJob/report-urls/metadata"  "../RPMs/metadata"
+									ectool setProperty "/myPipelineStageRuntime/ec_summary/metadata" --value "<html><a href=\"../RPMs/metadata\" target=\"_blank\">metadata</a></html>"
+
 								'''.stripIndent(),
 							]
 							subprocedure = 'RunCommand'
@@ -175,12 +175,7 @@ project ProjectName, {
 				smartRollback = '1'
 			}			
 			
-			processDependency 'Deploy app', targetProcessStepName: 'Rollback', {
-				branchCondition = '$[/javascript myJob.outcome != "success"]'
-				branchConditionName = 'onError'
-				branchConditionType = 'CUSTOM'
-				branchType = 'ALWAYS'
-			}
+			processDependency 'Deploy app', targetProcessStepName: 'Rollback', branchType: 'ERROR'
 			
 		} // process
 
