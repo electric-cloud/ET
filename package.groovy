@@ -56,7 +56,8 @@ project "ET", resourceName: "local", {
 			ectool setOutputParameter RPM "$[Application]-$[/myProject/$[Application]/version]-$[/increment /myProject/$[Application]/rpmIndex].rpm"
 		'''.stripIndent()
 		
-
+		step "Save RPM component look up", resourceName: '$[/myJob/Resource]', shell: 'ectool evalDsl --dslFile "{0}"',
+			command: 'property "/myProject/RPMs/$[/myJob/outputParameters/RPM]", value: \'\'\'$[ArtifactList]\'\'\' '
 		
 		step "Package RPM", resourceName: '$[/myJob/Resource]',
 			subproject : '/plugins/EC-FileOps/project',
