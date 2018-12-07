@@ -8,7 +8,7 @@ project "ET",{
 				plannedEndDate 		= "2018-12-08"
 
 				task 'Build', {
-					groupRunType = 'parallel'
+					groupRunType = 'serial'
 					taskType = 'GROUP'
 				}
 
