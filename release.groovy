@@ -114,7 +114,7 @@ project "ET",{
 			processName = 'Deploy'
 
 			['Integration','Staging','PRD'].each { conf -> // Bug: configurations not idempotent
-				deleteDeployerConfiguration deployerConfigurationName: conf
+				removeDeployerConfiguration deployerConfigurationName: conf, stageName: conf
 			}
 			
 			deployerConfiguration 'Integration', {
