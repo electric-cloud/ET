@@ -68,6 +68,36 @@ project "ET",{
 				task "Deployer",{
 					taskType = 'DEPLOYER'
 				} // task
+				
+				task 'Create Snapshot', {
+					actualParameter = [
+						'ApplicationName': 'App',
+						'EnvironmentName': '$[/myStage]',
+						'EnvironmentProjectName': '$[/myProject]',
+						'Overwrite': 'true',
+						'ProjectName': '$[/myProject]',
+						'SnapshotName': '$[/myPipelineRuntime/stages["Build and Package"]/tasks/Package/job/outputParameters/RPM]',
+					]
+					subpluginKey = 'EF-Utilities'
+					subprocedure = 'Create Snapshot'
+					taskType = 'UTILITY'
+				}
+
+				task 'Test', {
+					actualParameter = [
+						'browser': 'firefox',
+						'installpath': 'selenium-server.jar',
+						'javapath': 'java',
+						'resultfile': 'x',
+						'starturl': 'x',
+						'suitefile': 'x',
+					]
+					condition = 'false'
+					subpluginKey = 'EC-Selenium'
+					subprocedure = 'runSelenium'
+					taskType = 'PLUGIN'
+				}
+				
 			} // stage
 			stage "Staging",{
 				plannedStartDate 	= "2018-12-18"
@@ -83,10 +113,19 @@ project "ET",{
 					} // task
 				} // gate
 
-
 				task "Deployer",{
 					taskType = 'DEPLOYER'
 				} // task
+
+				task 'Smoke Test', {
+					description = ''
+					actualParameter = [
+					  'commandToRun': 'echo smoke test',
+					]
+					subpluginKey = 'EC-Core'
+					subprocedure = 'RunCommand'
+					taskType = 'COMMAND'
+				}
 				
 			} // stage
 			stage "PRD",{
@@ -106,6 +145,32 @@ project "ET",{
 				task "Deployer",{
 					taskType = 'DEPLOYER'
 				} // task
+
+				task 'Smoke Test', {
+					description = ''
+					actualParameter = [
+					  'commandToRun': 'echo smoke test',
+					]
+					subpluginKey = 'EC-Core'
+					subprocedure = 'RunCommand'
+					taskType = 'COMMAND'
+				}
+
+				task 'Monitor', {
+					actualParameter = [
+					  'category': 'unit',
+					  'config': 'x',
+					  'systemProfile': 'x',
+					  'testRunIDProperty': '/myJob/testRunID',
+					]
+					condition = 'false'
+					subpluginKey = 'EC-Dynatrace'
+					subprocedure = 'Create Test Run'
+					taskType = 'PLUGIN'
+					triggerType = null
+					useApproverAcl = '0'
+					waitForPlannedStartDate = '0'
+				}
 				
 			} // stage
 		} // pipeline
