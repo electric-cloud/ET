@@ -25,3 +25,7 @@ and restart Apache:
 
 ## TODO
 - Flow server URL lookup for RPM
+
+
+
+sudo apt-get install rpm
