@@ -42,13 +42,31 @@ project "ET",{
 						'''.stripIndent(),
 					],
 					stageSummaryParameters: '[{"name":"RPM","label":"RPM"}]'
-				task "Scan",{
+				task 'Scan', {
 					actualParameter = [
-					  'commandToRun': 'echo scanning',
+						'config': 'x',
+						'resultFormat': 'propertysheet',
+						'resultSonarProperty': '/myJob/runSonarScanner',
+						'scannerDebug': '0',
+						'sonarMetricsComplexity': 'all',
+						'sonarMetricsDocumentation': 'all',
+						'sonarMetricsDuplications': 'all',
+						'sonarMetricsIssues': 'all',
+						'sonarMetricsMaintainability': 'all',
+						'sonarMetricsMetrics': 'all',
+						'sonarMetricsQualityGates': 'all',
+						'sonarMetricsReliability': 'all',
+						'sonarMetricsSecurity': 'all',
+						'sonarMetricsTests': 'all',
+						'sonarProjectKey': 'x',
+						'sonarProjectName': 'x',
+						'sonarProjectVersion': 'x',
+						'sources': 'x',
 					]
-					subpluginKey = 'EC-Core'
-					subprocedure = 'RunCommand'
-					taskType = 'COMMAND'
+					condition = 'false'
+					subpluginKey = 'EC-SonarQube'
+					subprocedure = 'Run Sonar Scanner'
+					taskType = 'PLUGIN'
 				} // task
 			} // stage
 			stage "Integration",{
