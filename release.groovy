@@ -65,22 +65,8 @@ project "ET",{
 					} // task
 				} // gate
 
-				task "Deploy",{
-					description = ''
-					actualParameter = [
-						'Application': '$[/myRelease/Application]',
-						ec_smartDeployOption: '0',
-						ec_stageArtifacts: '0',
-						Version: '$[/myProject/$[/myRelease/Application]/version]-$[/myProject/$[/myRelease/Application]/rpmIndex]',
-					]
-					advancedMode = '0'
-					environmentName = stageName
-					environmentProjectName = projectName
-					subapplication = 'App'
-					subprocess = 'Deploy'
-					subproject = projectName
-					taskProcessType = 'APPLICATION'
-					taskType = 'PROCESS'
+				task "Deployer",{
+					taskType = 'DEPLOYER'
 				} // task
 			} // stage
 			stage "Staging",{
@@ -98,33 +84,10 @@ project "ET",{
 				} // gate
 
 
-				task "Deploy",{
-					description = ''
-					actualParameter = [
-						'Application': '$[/myRelease/Application]',
-						ec_smartDeployOption: '0',
-						ec_stageArtifacts: '0',
-						Version: '$[/myProject/$[/myRelease/Application]/version]-$[/myProject/$[/myRelease/Application]/rpmIndex]',
-					]
-					advancedMode = '0'
-					environmentName = stageName
-					environmentProjectName = projectName
-					subapplication = 'App'
-					subprocess = 'Deploy'
-					subproject = projectName
-					taskProcessType = 'APPLICATION'
-					taskType = 'PROCESS'
-					insertRollingDeployManualStep = '1'
-					rollingDeployEnabled = '1'
-					rollingDeployManualStepCondition = 'always'
-					rollingDeployManualStepAssignee = [
-						'admin',
-					]
-					rollingDeployPhase = [
-						'Blue',
-						'Green',
-					]
+				task "Deployer",{
+					taskType = 'DEPLOYER'
 				} // task
+				
 			} // stage
 			stage "PRD",{
 				plannedStartDate 	= "2018-12-20"
@@ -140,34 +103,63 @@ project "ET",{
 					} // task
 				} // gate
 
-				task "Deploy",{
-					description = ''
-					actualParameter = [
-						'Application': '$[/myRelease/Application]',
-						ec_smartDeployOption: '0',
-						ec_stageArtifacts: '0',
-						Version: '$[/myProject/$[/myRelease/Application]/version]-$[/myProject/$[/myRelease/Application]/rpmIndex]',
-					]
-					advancedMode = '0'
-					environmentName = stageName
-					environmentProjectName = projectName
-					subapplication = 'App'
-					subprocess = 'Deploy'
-					subproject = projectName
-					taskProcessType = 'APPLICATION'
-					taskType = 'PROCESS'
-					insertRollingDeployManualStep = '1'
-					rollingDeployEnabled = '1'
-					rollingDeployManualStepCondition = 'always'
-					rollingDeployManualStepAssignee = [
-						'admin',
-					]
-					rollingDeployPhase = [
-						'Blue',
-						'Green',
-					]
+				task "Deployer",{
+					taskType = 'DEPLOYER'
 				} // task
+				
 			} // stage
 		} // pipeline
+
+		deployerApplication 'App', {
+			processName = 'Deploy'
+
+			['Integration','Staging','PRD'].each { conf -> // Bug: configurations not idempotent
+				deleteDeployerConfiguration deployerConfigurationName: conf
+			}
+			
+			deployerConfiguration 'Integration', {
+				deployerTaskName = 'Deployer'
+				environmentName = 'Integration'
+				processName = 'Deploy'
+				stageName = 'Integration'
+				actualParameter 'Application', '$[/myRelease/Application]'
+				actualParameter 'Version', '$[/myProject/$[/myRelease/Application]/version]-$[/myProject/$[/myRelease/Application]/rpmIndex]'
+				actualParameter 'ec_smartDeployOption', '0'
+				actualParameter 'ec_stageArtifacts', '0'	
+			}
+			
+			deployerConfiguration 'Staging', {
+				deployerTaskName = 'Deployer'
+				stageName = 'Staging'
+				environmentName = 'Staging'
+				processName = 'Deploy'
+				rollingDeployEnabled = '1'
+				insertRollingDeployManualStep = '0'
+				rollingDeployPhase = ['Blue', 'Green']
+				actualParameter 'Application', '$[/myRelease/Application]'
+				actualParameter 'Version', '$[/myProject/$[/myRelease/Application]/version]-$[/myProject/$[/myRelease/Application]/rpmIndex]'
+				actualParameter 'ec_smartDeployOption', '0'
+				actualParameter 'ec_stageArtifacts', '0'
+			}
+			
+			deployerConfiguration 'PRD', {
+				deployerTaskName = 'Deployer'
+				stageName = 'PRD'
+				environmentName = 'PRD'
+				processName = 'Deploy'
+				rollingDeployEnabled = '1'
+				insertRollingDeployManualStep = '1'
+				rollingDeployManualStepCondition = 'always'
+				rollingDeployPhase = ['Blue', 'Green']
+				rollingDeployManualStepAssignee = ['admin']
+				actualParameter 'Application', '$[/myRelease/Application]'
+				actualParameter 'Version', '$[/myProject/$[/myRelease/Application]/version]-$[/myProject/$[/myRelease/Application]/rpmIndex]'
+				actualParameter 'ec_smartDeployOption', '0'
+				actualParameter 'ec_stageArtifacts', '0'
+			}			
+			
+			
+		} // deployer
+
 	} // release
 } // project
