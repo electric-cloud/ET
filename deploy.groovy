@@ -1,3 +1,4 @@
+def DeployTarget = "18.188.40.178"
 def ProjectName = "ET"
 def AppName = "App"
 def Envs = ["Integration","Staging","PRD"]
@@ -32,16 +33,21 @@ project ProjectName, {
 	// Create Environments, Tiers and Resources
 	Envs.each { Env ->
 		environment environmentName: Env, {
+			utilityResource 'Utility Resource', {
+				resourceName = 'local'
+			}
 			EnvTiers.each() { Tier ->
-				(1..2).each { i ->
+				def N = 2
+				if (Env == "Integration") {N = 1} // Only one resource in Integration
+				(1..N).each { i ->
 					def res = "${Env}_${Tier}_${i}"
 					environmentTier Tier, {
 						// create and add resource to the Tier
-						resource resourceName: res, hostName : "localhost"
-					}
-				}
-			}
-		}
+						resource resourceName: res, hostName : DeployTarget
+					} // environmentTier
+				} // each
+			} // EnvTiers
+		} // environment
 	} // Environments
 
 	application AppName, {
@@ -75,6 +81,15 @@ project ProjectName, {
 					process 'Install', {
 						processType = 'DEPLOY'
 
+						processStep 'Delete RPM Package', {
+							actualParameter = [
+								'rpmPackage': '$[Application]',
+							]
+							applicationTierName = null
+							subprocedure = 'Uninstall RPM Package'
+							subproject = '/plugins/EC-RPM/project'
+						} // processStep
+						
 						processStep 'Retrieve RPM', {
 							applicationTierName = null
 							actualParameter = [
@@ -109,47 +124,38 @@ project ProjectName, {
 						processDependency 'Retrieve RPM', targetProcessStepName: 'Deploy'
 						
 						processStep 'Install RPM', {
-							errorHandling = 'failProcedure'
 							applicationTierName = null
 							actualParameter = [
-								'commandToRun': '''\
-									cd ~/"$[/myResource]"
-									# Simulated rpm install
-									unzip -o $[Application]-$[Version].rpm
-									sh installer.sh
-									# Clean up
-									rm *.rpm *.zip
-									ls
-								'''.stripIndent(),
+								'rpmPath': '~/"$[/myResource]"/$[Application]-$[Version].rpm',
 							]
-							subprocedure = 'RunCommand'
-							subproject = '/plugins/EC-Core/project'
+							processStepType = 'plugin'
+							subprocedure = 'Install RPM'
+							subproject = '/plugins/EC-RPM/project'
 						} // processStep
 
 						processDependency 'Deploy', targetProcessStepName: 'Install RPM', branchType: 'SUCCESS'
-					
+						
+						processDependency 'Delete RPM Package', targetProcessStepName: 'Install RPM', {
+							branchType = 'ALWAYS'
+						}
+						
 						processStep 'Update Metadata File', {
+							
 							applicationTierName = null
 							actualParameter = [
 								'commandToRun': '''\
-									# Create metadata in Apache location
-									cd /opt/electriccloud/electriccommander/apache/htdocs/RPMs
-									# Make sure metadata file exists
-									touch metadata
-									# Remove entry for current host
-									sed -i '/$[/myResource]/d' metadata
-									# Add inventory for current host
-									echo "$[/myEnvironment]:$[/myResource]:$[Application]-$[Version].rpm">> metadata
-									ectool setProperty "/myJob/report-urls/metadata"  "../RPMs/metadata"
-									ectool setProperty "/myPipelineStageRuntime/ec_summary/metadata" --value "<html><a href=\"../RPMs/metadata\" target=\"_blank\">metadata</a></html>"
-
+									property "/projects/$[/myJob/projectName]/metadata"
+									def InitalValue = getProperty("/projects/$[/myJob/projectName]/metadata").value
+									def NewEntry = '$[/myEnvironment]:$[/myResource]:$[Application]-$[Version].rpm'
+									property "/projects/$[/myJob/projectName]/metadata", value: InitalValue + '\\n' + NewEntry
 								'''.stripIndent(),
+								'shellToUse': "ectool evalDsl --dslFile '{0}'"
 							]
 							subprocedure = 'RunCommand'
 							subproject = '/plugins/EC-Core/project'
 						} // processStep
 
-						processDependency 'Install RPM', targetProcessStepName: 'Update Metadata File'
+						processDependency 'Install RPM', targetProcessStepName: 'Update Metadata File', branchType: 'SUCCESS'
 						
 					} // process
 				} // component
@@ -176,6 +182,41 @@ project ProjectName, {
 			}			
 			
 			processDependency 'Deploy app', targetProcessStepName: 'Rollback', branchType: 'ERROR'
+
+			processStep 'Updata Metadata File', {
+				actualParameter = [
+					'AddNewLine': '0',
+					'Append': '0',
+					'Content': '$[/myProject/metadata]',
+					'Path': '/opt/electriccloud/electriccommander/apache/htdocs/RPMs/metadata',
+				]
+				processStepType = 'plugin'
+				subprocedure = 'AddTextToFile'
+				subproject = '/plugins/EC-FileOps/project'
+				useUtilityResource = '1'
+			}
+
+			processStep 'Add Metadata Link', {
+				actualParameter = [
+					'commandToRun': '''\
+						ectool setProperty "/myJob/report-urls/metadata"  "../RPMs/metadata"
+						ectool setProperty "/myPipelineStageRuntime/ec_summary/metadata" --value "<html><a href="../RPMs/metadata" target="_blank">metadata</a></html>"
+						'''.stripIndent(),
+				]
+				processStepType = 'command'
+				subprocedure = 'RunCommand'
+				subproject = '/plugins/EC-Core/project'
+				useUtilityResource = '1'
+			}
+
+			processDependency 'Deploy app', targetProcessStepName: 'Updata Metadata File', {
+				branchType = 'SUCCESS'
+			}
+
+			processDependency 'Updata Metadata File', targetProcessStepName: 'Add Metadata Link', {
+				branchType = 'SUCCESS'
+			}
+
 			
 		} // process
 

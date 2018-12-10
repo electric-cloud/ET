@@ -69,13 +69,27 @@ project "ET", resourceName: "local", {
 				Path: 'utils.spec'
 			]		
 			
-		step "Package RPM", resourceName: '$[/myJob/Resource]',
+		step "Package RPM", resourceName: '$[/myJob/Resource]', shell: "bash", command: '''\
+			workspace=$PWD
+			cd
+			rm -rf rpmbuild
+			mkdir -p rpmbuild/{artifacts,RPMS/noarch,SOURCES,SPECS,SRPMS}
+			cp -r $workspace/artifacts rpmbuild
+			cd ~/rpmbuild/SPECS/
+			cp $workspace/utils.spec .
+			rpmbuild --target noarch -bb utils.spec
+			cp /home/flow/rpmbuild/RPMS/noarch/*.rpm $workspace/$[/myJob/outputParameters/RPM]			
+		'''.stripIndent()
+		
+		
+			/*
 			subproject : '/plugins/EC-FileOps/project',
 			subprocedure : 'Create Zip File',
 			actualParameter : [
 				zipFile: '$[/myJob/outputParameters/RPM]',
 				sourceFile: 'artifacts/*'
 			]
+			*/
 		
 		step "Publish RPM", resourceName: '$[/myJob/Resource]',
 			subproject : '/plugins/EC-FileOps/project',

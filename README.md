@@ -31,3 +31,4 @@ sudo apt-get install rpm
 
 Target must be CentOS or other RH equivalent for RPM installation
 
+Install EC-RPM
