@@ -195,7 +195,8 @@ project "ET",{
 
 		deployerApplication 'App', {
 			processName = 'Deploy'
-
+			smartDeploy = '0'
+			stageArtifacts = '0'
 			['Integration','Staging','PRD'].each { conf -> // Bug: configurations not idempotent
 				removeDeployerConfiguration deployerConfigurationName: conf, stageName: conf
 			}
@@ -207,8 +208,6 @@ project "ET",{
 				stageName = 'Integration'
 				actualParameter 'Application', '$[/myRelease/Application]'
 				actualParameter 'Version', '$[/myProject/$[/myRelease/Application]/version]-$[/myProject/$[/myRelease/Application]/rpmIndex]'
-				actualParameter 'ec_smartDeployOption', '0'
-				actualParameter 'ec_stageArtifacts', '0'	
 			}
 			
 			deployerConfiguration 'Staging', {
@@ -221,8 +220,6 @@ project "ET",{
 				rollingDeployPhase = ['Blue', 'Green']
 				actualParameter 'Application', '$[/myRelease/Application]'
 				actualParameter 'Version', '$[/myProject/$[/myRelease/Application]/version]-$[/myProject/$[/myRelease/Application]/rpmIndex]'
-				actualParameter 'ec_smartDeployOption', '0'
-				actualParameter 'ec_stageArtifacts', '0'
 			}
 			
 			deployerConfiguration 'PRD', {
@@ -237,8 +234,6 @@ project "ET",{
 				rollingDeployManualStepAssignee = ['admin']
 				actualParameter 'Application', '$[/myRelease/Application]'
 				actualParameter 'Version', '$[/myProject/$[/myRelease/Application]/version]-$[/myProject/$[/myRelease/Application]/rpmIndex]'
-				actualParameter 'ec_smartDeployOption', '0'
-				actualParameter 'ec_stageArtifacts', '0'
 			}			
 			
 			

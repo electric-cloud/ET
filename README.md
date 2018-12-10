@@ -26,6 +26,8 @@ and restart Apache:
 ## TODO
 - Flow server URL lookup for RPM
 
-
-
+Install on build machine:
 sudo apt-get install rpm
+
+Target must be CentOS or other RH equivalent for RPM installation
+
