@@ -58,7 +58,17 @@ project "ET", resourceName: "local", {
 		
 		step "Save RPM component look up", resourceName: '$[/myJob/Resource]', shell: 'ectool evalDsl --dslFile "{0}"',
 			command: 'property "/myProject/RPMs/$[/myJob/outputParameters/RPM]", value: \'\'\'$[ArtifactList]\'\'\' '
-		
+
+		step "Save utils.spec_template to property", resourceName: '$[/myJob/Resource]', command: 'ectool setProperty "/myJob/utils.spec_template" --valueFile "artifacts/utils.spec_template"'
+			
+		step "Expand utils.spec_template", resourceName: '$[/myJob/Resource]',
+			subproject : '/plugins/EC-FileOps/project',
+			subprocedure : 'AddTextToFile',
+			actualParameter : [
+				Content: '$[/myJob/utils.spec_template]',
+				Path: 'utils.spec'
+			]		
+			
 		step "Package RPM", resourceName: '$[/myJob/Resource]',
 			subproject : '/plugins/EC-FileOps/project',
 			subprocedure : 'Create Zip File',
