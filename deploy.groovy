@@ -146,8 +146,15 @@ project ProjectName, {
 								'commandToRun': '''\
 									property "/projects/$[/myJob/projectName]/metadata"
 									def InitalValue = getProperty("/projects/$[/myJob/projectName]/metadata").value
+									def Trimmed = []
+									InitalValue.split('\\n').each { line ->
+										if (! (line =~ /Integration:Integration_App_1:app1/)) {
+											Trimmed.push(line)
+										}
+									}
 									def NewEntry = '$[/myEnvironment]:$[/myResource]:$[Application]-$[Version].rpm'
-									property "/projects/$[/myJob/projectName]/metadata", value: InitalValue + '\\n' + NewEntry
+									Trimmed.push(NewEntry)
+									property "/projects/$[/myJob/projectName]/metadata", value: Trimmed.join('\\n')
 								'''.stripIndent(),
 								'shellToUse': "ectool evalDsl --dslFile '{0}'"
 							]
