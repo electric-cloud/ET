@@ -6,6 +6,7 @@ project "ET",{
 			stage "Build and Package",{
 				plannedStartDate 	= "2018-12-04"
 				plannedEndDate 		= "2018-12-08"
+				colorCode = '#0000ff'
 
 				task 'Build', {
 					groupRunType = 'serial'
@@ -72,6 +73,7 @@ project "ET",{
 			stage "Integration",{
 				plannedStartDate 	= "2018-12-08"
 				plannedEndDate 		= "2018-12-18"
+				colorCode = '#ff8000'
 
 				gate 'PRE', {
 					task 'Promote', {
@@ -120,6 +122,7 @@ project "ET",{
 			stage "Staging",{
 				plannedStartDate 	= "2018-12-18"
 				plannedEndDate 		= "2018-12-20"
+				colorCode = '#800080'
 
 				gate 'PRE', {
 					task 'Promote', {
@@ -149,6 +152,7 @@ project "ET",{
 			stage "PRD",{
 				plannedStartDate 	= "2018-12-20"
 				plannedEndDate 		= "2018-12-21"
+				colorCode = '#008040'
 
 				gate 'PRE', {
 					task 'Promote', {
