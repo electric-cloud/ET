@@ -15,14 +15,18 @@ def envs = ["Integration", "Staging", "PRD"]
 def writer = new StringWriter()  // html is written here by markup builder
 def markup = new groovy.xml.MarkupBuilder(writer)  // the builder
 markup.html {
+
+
+
+
 	table (border: "1px solid black;border-collapse: collapse;") {
 		tr {
 			envs.each { env ->
-					td {
+					td (valign: "top") {
 
 						table (border: "1px solid black;border-collapse: collapse;") {
 							tr {
-								td (env)
+								td (env, width: "100%")
 							}							
 							getEnvironmentInventoryItems(projectName: proj, environmentName: env).each { inv ->
 								def rpm = "${inv.artifactName}-${inv.artifactVersion}.rpm"
