@@ -148,7 +148,7 @@ project ProjectName, {
 									def InitalValue = getProperty("/projects/$[/myJob/projectName]/metadata").value
 									def Trimmed = []
 									InitalValue.split('\\n').each { line ->
-										if (! (line =~ /Integration:Integration_App_1:app1/)) {
+										if (! (line =~ /$[/myEnvironment]:$[/myResource]:$[Application]/)) {
 											Trimmed.push(line)
 										}
 									}
