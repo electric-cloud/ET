@@ -207,7 +207,7 @@ project ProjectName, {
 				actualParameter = [
 					'commandToRun': '''\
 						ectool setProperty "/myJob/report-urls/metadata"  "../RPMs/metadata"
-						ectool setProperty "/myPipelineStageRuntime/ec_summary/metadata" --value "<html><a href="../RPMs/metadata" target="_blank">metadata</a></html>"
+						ectool setProperty "/$[/javascript (typeof(myStageRuntime)=="object")?"myStageRuntime":"myJobStep"]/ec_summary/metadata" --value "<html><a href="../RPMs/metadata" target="_blank">metadata</a></html>"
 						'''.stripIndent(),
 				]
 				processStepType = 'command'
