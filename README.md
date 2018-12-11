@@ -13,8 +13,8 @@ This Electric Flow Pipeline implements an RPM delivery pipeline. The pipeline is
 
 ## Installation
 1. Install rpm on server, ```sudo apt-get install rpm```
-1. Create a git configuration and set it in build.groovy and package.groovy
-1. Edit the IP address for the CentOS target machine in deploy.groovy
+1. Create a git configuration and set it in build.groovy and *package.groovy*
+1. Edit the IP address for the CentOS target machine in *deploy.groovy*
 1. Import the DSL ```./install.sh```
 1. Copy the contents of Inventory.groovy to /server/unplug/vc, ```ectool setProperty "/server/unplug/vc" --valueFile Inventory.groovy```
 
@@ -31,7 +31,7 @@ and restart Apache:
 ## Instructions
 1. Run the release
 1. The Application can be run from snapshots created by the release pipeline
-1. RPM Inventory and content can be viewed at https://<FlowHostName>/commander/pages/unplug/un_runc
+1. RPM Inventory and content can be viewed at https://FlowHostName/commander/pages/unplug/un_runc
 
 ## TODO
 - Flow server URL lookup for RPM
