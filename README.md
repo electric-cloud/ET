@@ -8,13 +8,14 @@ This Electric Flow Pipeline implements an RPM delivery pipeline. The pipeline is
 ## Dependencies
 1. Flow Ubuntu or CentOS server.  In the case of Ubuntu, RPM packages must be installed.
 1. CentOS agent
-1. [EC-RPM](https://github.com/electric-cloud/EC-RPM) plugin installed and promoted on Flow server
+1. [EC-WebServerRepo](https://github.com/electric-cloud/EC-WebServerRepo) plugin installed and promoted on Flow server
 1. [Unplug plugin](https://github.com/electric-cloud/Unplug) plugin installed and promoted on Flow server
 
 ## Installation
 1. Install rpm on server, ```sudo apt-get install rpm```
 1. Create a git configuration and set it in build.groovy and *package.groovy*
 1. Edit the IP address for the CentOS target machine in *deploy.groovy*
+1. Create a EC-WebServerRepo configuration called "rpmRepo"
 1. Import the DSL ```./install.sh```
 1. Copy the contents of Inventory.groovy to /server/unplug/vc, ```ectool setProperty "/server/unplug/vc" --valueFile Inventory.groovy```
 
@@ -30,6 +31,7 @@ and restart Apache:
 
 ## Instructions
 1. Run the release
+1. See evidence links under stage summaries
 1. The Application can be run from snapshots created by the release pipeline
 1. RPM Inventory and content can be viewed at https://FlowHostName/commander/pages/unplug/un_runc
 

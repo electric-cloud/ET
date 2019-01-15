@@ -1,13 +1,26 @@
 project "ET",{
-	release "app1 2018.12.20",{
-		plannedEndDate = "2018-12-20"
+	release "app1 2019.01.24",{
+		plannedEndDate = "2019-01-24"
 		property "Application", value: "app1"
 		pipeline "Build Package Deploy",{
 			stage "Build and Package",{
-				plannedStartDate 	= "2018-12-04"
-				plannedEndDate 		= "2018-12-08"
+				plannedStartDate 	= "2019-01-08"
+				plannedEndDate 		= "2019-01-12"
 				colorCode = '#0000ff'
 
+				task 'Add Evidence Links', {
+					actualParameter = [
+						'commandToRun': '''\
+							ectool setProperty /myStageRuntime/ec_summary/inventory --value "<html><a href="../commander/pages/unplug/un_runc" target="_blank">Environment Inventory</a></html>"
+							ectool setProperty /myStageRuntime/ec_summary/RPMs --value "<html><a href="../RPMs" target="_blank">metadata</a></html>"
+						'''.stripIndent()
+					]
+					subpluginKey = 'EC-Core'
+					subprocedure = 'RunCommand'
+					taskType = 'COMMAND'
+				}
+				
+				
 				task 'Build', {
 					groupRunType = 'serial'
 					taskType = 'GROUP'
@@ -71,8 +84,8 @@ project "ET",{
 				} // task
 			} // stage
 			stage "Integration",{
-				plannedStartDate 	= "2018-12-08"
-				plannedEndDate 		= "2018-12-18"
+				plannedStartDate 	= "2019-01-12"
+				plannedEndDate 		= "2019-01-22"
 				colorCode = '#ff8000'
 
 				gate 'PRE', {
@@ -120,8 +133,8 @@ project "ET",{
 				
 			} // stage
 			stage "Staging",{
-				plannedStartDate 	= "2018-12-18"
-				plannedEndDate 		= "2018-12-20"
+				plannedStartDate 	= "2019-01-22"
+				plannedEndDate 		= "2019-01-24"
 				colorCode = '#800080'
 
 				gate 'PRE', {
@@ -150,8 +163,8 @@ project "ET",{
 				
 			} // stage
 			stage "PRD",{
-				plannedStartDate 	= "2018-12-20"
-				plannedEndDate 		= "2018-12-21"
+				plannedStartDate 	= "2019-01-24"
+				plannedEndDate 		= "2019-01-25"
 				colorCode = '#008040'
 
 				gate 'PRE', {

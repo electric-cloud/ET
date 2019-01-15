@@ -1,3 +1,13 @@
+/*
+
+Need a configuration "rpmRepo", no credentials needed
+https://web.test.ecloud-kdemo.com/RPMs
+
+*/
+
+// Depends on EC-WebServerRepo
+getPlugin(pluginName: "EC-WebServerRepo")
+
 def DeployTarget = "18.188.40.178"
 def ProjectName = "ET"
 def AppName = "App"
@@ -54,91 +64,57 @@ project ProjectName, {
 		
 		AppTiers.each() { Tier ->
 			applicationTier Tier, {
-				component "RPM", pluginKey: "EC-FileSysRepo",{
+				component "RPM", pluginKey: "EC-WebServerRepo",{
 				
-						property 'ec_content_details', {
-							property 'artifact', value: '$[Application]', {
-								expandable = '1'
-							}
-							artifactRelativePath = '$[artifact]-$[version].rpm'
-							directory = '/home/flow/$[/myResource]'
-							isFilePath = '1'
-							latestVersionFinder = ''
-							overwrite = '1'
-							pluginProcedure = 'Retrieve File Artifact'
-							property 'pluginProjectName', value: 'EC-FileSysRepo', {
-								expandable = '1'
-							}
-							property 'source', value: '/tmp/$[/myResource]', {
-								expandable = '1'
-							}
-							property 'version', value: '$[Version]', {
-								expandable = '1'
-							}
-						} // property				
+					property 'ec_content_details', {
+
+						// Custom properties
+
+						property 'artifact', value: '$[Application]', {
+							expandable = '1'
+						}
+						config = 'rpmRepo'
+
+						property 'destination', value: '/tmp/$[/myResource]', {
+							expandable = '1'
+						}
+
+						property 'layout', value: '$[Application]-$[Version].rpm', {
+							expandable = '1'
+						}
+						overwrite = '1'
+						pluginProcedure = 'RetrieveArtifactFromWebServer'
+
+						property 'pluginProjectName', value: 'EC-WebServerRepo', {
+							expandable = '1'
+						}
+						resultPropertySheet = '/myJob/retrievedArtifactVersions/$[assignedResourceName]'
+
+						property 'version', value: '$[Version]', {
+							expandable = '1'
+						}
+					} // property				
 				
 				
 					process 'Install', {
 						processType = 'DEPLOY'
-
-						processStep 'Delete RPM Package', {
-							actualParameter = [
-								'rpmPackage': '$[Application]',
-							]
-							applicationTierName = null
-							subprocedure = 'Uninstall RPM Package'
-							subproject = '/plugins/EC-RPM/project'
-						} // processStep
-						
-						processStep 'Retrieve RPM', {
-							applicationTierName = null
-							actualParameter = [
-								'commandToRun': '''\
-									mkdir -p /tmp/$[/myResource]
-									cd /tmp/$[/myResource]
-									rm -f $[Application]-$[Version].rpm*
-									wget --no-check-certificate https://$[/server/settings/ipAddress]/RPMs/$[Application]-$[Version].rpm
-								'''.stripIndent(),
-							]
-							subprocedure = 'RunCommand'
-							subproject = '/plugins/EC-Core/project'
-						} // processStep
-					
-						processStep 'Deploy', {
+			
+						processStep 'Install RPM', {
 							actualParameter = [
 								'artifact': '$[/myComponent/ec_content_details/artifact]',
-								'artifactRelativePath': '$[/myComponent/ec_content_details/artifactRelativePath]',
-								'directory': '$[/myComponent/ec_content_details/directory]',
-								'isFilePath': '$[/myComponent/ec_content_details/isFilePath]',
-								'latestVersionFinder': '$[/myComponent/ec_content_details/latestVersionFinder]',
+								'config': '$[/myComponent/ec_content_details/config]',
+								'destination': '$[/myComponent/ec_content_details/destination]',
+								'layout': '$[/myComponent/ec_content_details/layout]',
 								'overwrite': '$[/myComponent/ec_content_details/overwrite]',
-								'source': '$[/myComponent/ec_content_details/source]',
+								'resultPropertySheet': '$[/myComponent/ec_content_details/resultPropertySheet]',
 								'version': '$[/myJob/ec_RPM-version]',
 							]
 							applicationTierName = null
 							processStepType = 'component'
-							subprocedure = 'Retrieve File Artifact'
-							subproject = '/plugins/EC-FileSysRepo/project'
+							subprocedure = 'RetrieveArtifactFromWebServer'
+							subproject = '/plugins/EC-WebServerRepo/project'
 						} // processStep
 
-						processDependency 'Retrieve RPM', targetProcessStepName: 'Deploy'
-						
-						processStep 'Install RPM', {
-							applicationTierName = null
-							actualParameter = [
-								'rpmPath': '~/"$[/myResource]"/$[Application]-$[Version].rpm',
-							]
-							processStepType = 'plugin'
-							subprocedure = 'Install RPM'
-							subproject = '/plugins/EC-RPM/project'
-						} // processStep
-
-						processDependency 'Deploy', targetProcessStepName: 'Install RPM', branchType: 'SUCCESS'
-						
-						processDependency 'Delete RPM Package', targetProcessStepName: 'Install RPM', {
-							branchType = 'ALWAYS'
-						}
-						
 						processStep 'Update Metadata File', {
 							
 							applicationTierName = null
