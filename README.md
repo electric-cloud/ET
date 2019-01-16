@@ -34,6 +34,7 @@ and restart Apache:
 1. See evidence links under stage summaries
 1. The Application can be run from snapshots created by the release pipeline
 1. RPM Inventory and content can be viewed at https://FlowHostName/commander/pages/unplug/un_runc
+1. You can introduce a deploy time error to show roll-back by editing the file utils.spec_template at https://github.com/electric-cloud/ET_rpm; set exit statement to "exit 1"
 
 ## TODO
 - Flow server URL lookup for RPM

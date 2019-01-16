@@ -128,6 +128,7 @@ project ProjectName, {
 									fi
 								'''.stripIndent(),
 							]
+							applicationTierName = null
 							processStepType = 'command'
 							subprocedure = 'RunCommand'
 							subproject = '/plugins/EC-Core/project'
@@ -141,6 +142,7 @@ project ProjectName, {
 									sudo rpm -ivh /tmp/$[/myResource]/$[Application]-$[Version].rpm
 								'''.stripIndent(),
 							]
+							applicationTierName = null
 							processStepType = 'command'
 							subprocedure = 'RunCommand'
 							subproject = '/plugins/EC-Core/project'
