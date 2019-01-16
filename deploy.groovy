@@ -115,16 +115,38 @@ project ProjectName, {
 							subproject = '/plugins/EC-WebServerRepo/project'
 						} // processStep
 
+						processStep 'Remove old', {
+							actualParameter = [
+								'commandToRun': '''\
+									oldpackage=$(sudo rpm -qa | grep ^$[Application])
+									if test -z "$oldpackage"
+									then
+										echo No old version present
+									else
+										echo Removing old version, $oldpackage
+										sudo rpm -e $oldpackage
+									fi
+								'''.stripIndent(),
+							]
+							processStepType = 'command'
+							subprocedure = 'RunCommand'
+							subproject = '/plugins/EC-Core/project'
+						}
+						
+						processDependency 'Retrieve RPM', targetProcessStepName: 'Remove old', branchType: 'SUCCESS'
+						
 						processStep 'Install', {
 							actualParameter = [
-							'commandToRun': 'echo installing rpm',
+								'commandToRun': '''\
+									sudo rpm -ivh /tmp/$[/myResource]/$[Application]-$[Version].rpm
+								'''.stripIndent(),
 							]
 							processStepType = 'command'
 							subprocedure = 'RunCommand'
 							subproject = '/plugins/EC-Core/project'
 						}
 							
-						processDependency 'Retrieve RPM', targetProcessStepName: 'Install', branchType: 'SUCCESS'
+						processDependency 'Remove old', targetProcessStepName: 'Install', branchType: 'SUCCESS'
 					
 						processStep 'Update Metadata File', {
 							
