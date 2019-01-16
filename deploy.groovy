@@ -99,7 +99,7 @@ project ProjectName, {
 					process 'Install', {
 						processType = 'DEPLOY'
 			
-						processStep 'Install RPM', {
+						processStep 'Retrieve RPM', {
 							actualParameter = [
 								'artifact': '$[/myComponent/ec_content_details/artifact]',
 								'config': '$[/myComponent/ec_content_details/config]',
@@ -115,6 +115,17 @@ project ProjectName, {
 							subproject = '/plugins/EC-WebServerRepo/project'
 						} // processStep
 
+						processStep 'Install', {
+							actualParameter = [
+							'commandToRun': 'echo installing rpm',
+							]
+							processStepType = 'command'
+							subprocedure = 'RunCommand'
+							subproject = '/plugins/EC-Core/project'
+						}
+							
+						processDependency 'Retrieve RPM', targetProcessStepName: 'Install', branchType: 'SUCCESS'
+					
 						processStep 'Update Metadata File', {
 							
 							applicationTierName = null
@@ -138,7 +149,7 @@ project ProjectName, {
 							subproject = '/plugins/EC-Core/project'
 						} // processStep
 
-						processDependency 'Install RPM', targetProcessStepName: 'Update Metadata File', branchType: 'SUCCESS'
+						processDependency 'Install', targetProcessStepName: 'Update Metadata File', branchType: 'SUCCESS'
 						
 					} // process
 				} // component
