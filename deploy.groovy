@@ -127,6 +127,7 @@ project ProjectName, {
 										sudo rpm -e $oldpackage
 									fi
 								'''.stripIndent(),
+								'shellToUse': 'bash'
 							]
 							applicationTierName = null
 							processStepType = 'command'
