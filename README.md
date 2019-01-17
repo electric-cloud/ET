@@ -16,8 +16,7 @@ This Electric Flow Pipeline implements an RPM delivery pipeline. The pipeline is
 1. Create a git configuration and set it in build.groovy and *package.groovy*
 1. Edit the IP address for the CentOS target machine in *deploy.groovy*
 1. Create a EC-WebServerRepo configuration called "rpmRepo"
-1. Import the DSL ```./install.sh```
-1. Copy the contents of Inventory.groovy to /server/unplug/vc, ```ectool setProperty "/server/unplug/vc" --valueFile Inventory.groovy```
+1. Run the script ```./install.sh```
 
 ## Optional
 1. To enable directory listing to Apache file server, add the following lines to */opt/electriccloud/electriccommander/apache/conf/httpd.conf*:

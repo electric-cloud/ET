@@ -12,7 +12,7 @@ project "ET",{
 					actualParameter = [
 						'commandToRun': '''\
 							ectool setProperty /myStageRuntime/ec_summary/inventory --value "<html><a href="../commander/pages/unplug/un_runc" target="_blank">Environment Inventory</a></html>"
-							ectool setProperty /myStageRuntime/ec_summary/RPMs --value "<html><a href="../RPMs" target="_blank">metadata</a></html>"
+							ectool setProperty /myStageRuntime/ec_summary/RPMs --value "<html><a href="../RPMs" target="_blank">File List</a></html>"
 						'''.stripIndent()
 					]
 					subpluginKey = 'EC-Core'
