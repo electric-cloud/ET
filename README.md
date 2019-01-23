@@ -17,9 +17,7 @@ This Electric Flow Pipeline implements an RPM delivery pipeline. The pipeline is
 1. Edit the IP address for the CentOS target machine in *deploy.groovy*
 1. Create a EC-WebServerRepo configuration called "rpmRepo"
 1. Run the script ```./install.sh```
-
-## Optional
-1. To enable directory listing to Apache file server, add the following lines to */opt/electriccloud/electriccommander/apache/conf/httpd.conf*:
+1. Enable directory listing to Apache file server, add the following lines to */opt/electriccloud/electriccommander/apache/conf/httpd.conf*:
 ```
 <Directory /opt/electriccloud/electriccommander/apache/htdocs/RPMs>
   Options +Indexes
