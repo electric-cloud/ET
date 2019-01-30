@@ -1,20 +1,20 @@
 # ET - RPM Pipeline
 
 This Electric Flow Pipeline implements an RPM delivery pipeline. The pipeline is implemented as follows:
-1. It builds two artifacts ([ET_comp1](https://github.com/electric-cloud/ET_comp1), [ET_comp2](https://github.com/electric-cloud/ET_comp2)) from github repos and publish them to the Electric Cloud artifact repository
+1. It builds two artifacts ([ET_comp1](https://github.com/electric-cloud/ET_comp1), [ET_comp2](https://github.com/electric-cloud/ET_comp2)) from github repos and publish them to the ElectricFlow artifact repository
 1. It packages these artifacts as an RPM and publishes the RPM to an Apache server (https://<flowserverHostName/RPMs)
-1. It deploys the RPM to Integration, Staging, and PRD enviroments (currenly all resources are the same CentOS machine)
+1. It deploys the RPM to Integration, Staging, and PRD enviroments (currenly all target resources are the same CentOS machine)
 
 ## Dependencies
-1. Flow Ubuntu or CentOS server.  In the case of Ubuntu, RPM packages must be installed.
+1. Flow Ubuntu or CentOS server required.  In the case of Ubuntu, RPM packages must be installed.
 1. CentOS agent
 1. [EC-WebServerRepo](https://github.com/electric-cloud/EC-WebServerRepo) plugin installed and promoted on Flow server
 1. [Unplug plugin](https://github.com/electric-cloud/Unplug) plugin installed and promoted on Flow server
 
 ## Installation
-1. Install rpm on server, ```sudo apt-get install rpm```
-1. Create a git configuration and set it in build.groovy and *package.groovy*
-1. Edit the IP address for the CentOS target machine in *deploy.groovy*
+1. If ElectricFlow server is running on Ubuntu, install rpm, ```sudo apt-get install rpm```
+1. Create a git configuration and set it in [build.groovy](build.groovy) and [package.groovy](package.groovy)
+1. Edit the IP address for the CentOS target machine in [deploy.groovy](deploy.groovy)
 1. Create a EC-WebServerRepo configuration called "rpmRepo"
 1. Run the script ```./install.sh```
 1. Enable directory listing to Apache file server, add the following lines to */opt/electriccloud/electriccommander/apache/conf/httpd.conf*:
